@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لعبة كروت الذاكرة</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #attempts {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .card {
+      width: 80px;
+      height: 80px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .matched {
+      background-color: #777;
+      cursor: default;
+    }
+
+    #winMessage {
+      font-size: 22px;
+      color: green;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>لعبة كروت الذاكرة</h1>
+  <div id="attempts">المحاولات: 0</div>
+  <div class="grid" id="gameGrid"></div>
+  <div id="winMessage"></div>
+
+  <script>
+    function startGame() {
+      const symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      let cards = symbols.concat(symbols);
+      cards = cards.sort(() => Math.random() - 0.5);  // ترتيب الكروت عشوائيًا
+
+      const grid = document.getElementById("gameGrid");
+      const attemptsDisplay = document.getElementById("attempts");
+      const winMessage = document.getElementById("winMessage");
+
+      let firstCard = null;
+      let secondCard = null;
+      let lock = false;
+      let matches = 0;
+      let attempts = 0;
+
+      grid.innerHTML = ''; // تنظيف الكروت القديمة
+
+      cards.forEach(symbol => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.symbol = symbol;
+        card.textContent = "";
+        grid.appendChild(card);
+
+        card.addEventListener("click", () => {
+          if (lock || card.classList.contains("matched") || card === firstCard) return;
+
+          card.textContent = card.dataset.symbol;
+
+          if (!firstCard) {
+            firstCard = card;
+          } else {
+            secondCard = card;
+            lock = true;
+            attempts++;
+            attemptsDisplay.textContent = "المحاولات: " + attempts;
+
+            if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+              firstCard.classList.add("matched");
+              secondCard.classList.add("matched");
+              matches++;
+              resetCards();
+
+              if (matches === symbols.length) {
+                winMessage.textContent = "مبروك! انت كسبت اللعبة بعد " + attempts + " محاولة!";
+                setTimeout(() => {
+                  winMessage.textContent = ''; // مسح رسالة الفوز
+                  startGame(); // إعادة اللعبة
+                }, 2000); // إعادة اللعبة بعد 2 ثانية
+              }
+
+            } else {
+              setTimeout(() => {
+                firstCard.textContent = "";
+                secondCard.textContent = "";
+                resetCards();
+              }, 1000);
+            }
+          }
+        });
+      });
+
+      function resetCards() {
+        firstCard = null;
+        secondCard = null;
+        lock = false;
+      }
+    }
+
+    startGame(); // بدء اللعبة مباشرة عند تحميل الصفحة
+  </script>
+
+</body>
+</html>

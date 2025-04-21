@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>لعبة الضغط</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: Tahoma;
+        margin-top: 60px;
+      }
+      button {
+        font-size: 22px;
+        padding: 12px 24px;
+        background-color: green;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 10px;
+      }
+      #timer {
+        font-size: 20px;
+        margin: 10px;
+      }
+      #countdown {
+        font-size: 28px;
+        color: red;
+        margin: 20px;
+      }
+      #highScore {
+        font-size: 18px;
+        color: darkblue;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>اضغط بأسرع ما يمكن خلال 20 ثانية!</h1>
+    <p id="highScore">أعلى نتيجة: 0</p>
+    <p id="timer">الوقت المتبقي: 20 ثانية</p>
+    <p>النتيجة: <span id="score">0</span></p>
+
+    <div id="countdown">استعد...</div>
+
+    <button id="clickBtn" onclick="increaseScore()" disabled>اضغطني!</button>
+    <br>
+    <button onclick="startCountdown()">ابدأ من جديد</button>
+
+    <audio id="clickSound" src="click.mp3"></audio>
+
+    <script>
+      let score = 0;
+      let timeLeft = 20;
+      let timer;
+      let gameActive = false;
+      let highScore = localStorage.getItem("highScore") || 0;
+
+      document.getElementById("highScore").innerText = `أعلى نتيجة: ${highScore}`;
+
+      function startCountdown() {
+        clearInterval(timer);
+        score = 0;
+        timeLeft = 20;
+        gameActive = false;
+        document.getElementById("score").innerText = score;
+        document.getElementById("clickBtn").disabled = true;
+        document.getElementById("timer").innerText = "الوقت المتبقي: 20 ثانية";
+
+        let count = 3;
+        document.getElementById("countdown").innerText = "استعد...";
+
+        let countdownInterval = setInterval(() => {
+          document.getElementById("countdown").innerText = count;
+          count--;
+
+          if (count < 0) {
+            clearInterval(countdownInterval);
+            document.getElementById("countdown").innerText = "ابدأ!";
+            setTimeout(() => {
+              document.getElementById("countdown").innerText = "";
+              startGame();
+            }, 1000);
+          }
+        }, 1000);
+      }
+
+      function startGame() {
+        gameActive = true;
+        document.getElementById("clickBtn").disabled = false;
+
+        timer = setInterval(() => {
+          timeLeft--;
+          document.getElementById("timer").innerText = `الوقت المتبقي: ${timeLeft} ثانية`;
+
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            gameActive = false;
+            document.getElementById("clickBtn").disabled = true;
+            document.getElementById("timer").innerText = `انتهى الوقت! النتيجة: ${score}`;
+
+            if (score > highScore) {
+              highScore = score;
+              localStorage.setItem("highScore", highScore);
+              document.getElementById("highScore").innerText = `أعلى نتيجة: ${highScore}`;
+            }
+          }
+        }, 1000);
+      }
+
+      function increaseScore() {
+        if (gameActive) {
+          score++;
+          document.getElementById("score").innerText = score;
+          document.getElementById("clickSound").play();
+        }
+      }
+
+      // أول ما تفتح الصفحة:
+      startCountdown();
+    </script>
+
+  </body>
+</html>

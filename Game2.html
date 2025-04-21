@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>اختبر ذاكرتك</title>
+    <style>
+      body {
+        font-family: Tahoma;
+        text-align: center;
+        margin-top: 60px;
+      }
+      #numbers {
+        font-size: 36px;
+        color: darkred;
+        margin-bottom: 20px;
+      }
+      input {
+        font-size: 20px;
+        padding: 8px;
+        width: 100px;
+        text-align: center;
+      }
+      button {
+        font-size: 18px;
+        padding: 10px 20px;
+        margin-top: 10px;
+        background-color: darkblue;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      #result {
+        font-size: 22px;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>لعبة اختبار الذاكرة</h1>
+    <div id="numbers">جاهز؟</div>
+
+    <input type="text" id="userInput" maxlength="4" placeholder="اكتب الرقم هنا" disabled>
+    <br>
+    <button onclick="checkAnswer()" disabled id="checkBtn">تحقق</button>
+
+    <p id="result"></p>
+
+    <script>
+      let randomNumber = "";
+
+      function generateNumber() {
+        randomNumber = "";
+        for (let i = 0; i < 4; i++) {
+          randomNumber += Math.floor(Math.random() * 10);
+        }
+
+        document.getElementById("numbers").innerText = randomNumber;
+        document.getElementById("result").innerText = "";
+        document.getElementById("userInput").value = "";
+        document.getElementById("userInput").disabled = true;
+        document.getElementById("checkBtn").disabled = true;
+
+        setTimeout(() => {
+          document.getElementById("numbers").innerText = "ما هو الرقم؟";
+          document.getElementById("userInput").disabled = false;
+          document.getElementById("checkBtn").disabled = false;
+          document.getElementById("userInput").focus();
+        }, 2000);
+      }
+
+      function checkAnswer() {
+        const userAnswer = document.getElementById("userInput").value;
+        if (userAnswer === randomNumber) {
+          document.getElementById("result").innerText = "إجابة صحيحة!";
+        } else {
+          document.getElementById("result").innerText = `غلط! الرقم كان: ${randomNumber}`;
+        }
+
+        setTimeout(generateNumber, 2000);
+      }
+
+      // أول ما تفتح اللعبة
+      generateNumber();
+    </script>
+
+  </body>
+</html>
